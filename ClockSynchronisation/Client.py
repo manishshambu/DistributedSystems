@@ -1,6 +1,8 @@
 import socket
 from datetime import datetime
 import numpy
+import matplotlib.pyplot as plt
+import csv
 
 def clientProc():
     clientTimesDict = {}
@@ -28,15 +30,32 @@ if __name__ == "__main__":
     serverRespTimes = []
 
     roundTripTimes = []
+    standardDeviation = []
+    averageRoundTripTime = None
+    standardDeviation = None
 
-    for i in range(100):
-        clientTimesDict, serverTimesDict = clientProc()
-        clientReqTimes.append(clientTimesDict['clientReqTime'])
-        clientRecvTimes.append(clientTimesDict['clientRecvTime'])
-        serverRecvTimes.append(serverTimesDict['serverRecvTime'])
-        serverRespTimes.append(serverTimesDict['serverRespTime'])
-        roundTripTimes.append(clientTimesDict['clientRecvTime'] - clientTimesDict['clientReqTime'])
+    with open('results.csv', 'w', newline='') as csvfile:
+        csvWriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csvWriter.writerow(['Client Request Time', 'Client Recieved Time', 'Server Recieved Time', 'Server Response Time', 'Roundtrip delay'])
 
-    print("Average Round Trip delay is "+str(numpy.mean(roundTripTimes)))
+        for i in range(100):
+            clientTimesDict, serverTimesDict = clientProc()
+            clientReqTimes.append(clientTimesDict['clientReqTime'])
+            clientRecvTimes.append(clientTimesDict['clientRecvTime'])
+            serverRecvTimes.append(serverTimesDict['serverRecvTime'])
+            serverRespTimes.append(serverTimesDict['serverRespTime'])
+            roundTripTime = (clientTimesDict['clientRecvTime'] - clientTimesDict['clientReqTime']).total_seconds()
+            roundTripTimes.append(roundTripTime)
+            csvWriter.writerow([clientTimesDict['clientReqTime'], clientTimesDict['clientRecvTime'], serverTimesDict['serverRecvTime'], serverTimesDict['serverRespTime'], roundTripTime ])
+
+
+    averageRoundTripTime = numpy.mean(roundTripTimes)
+    standardDeviation    = numpy.std(roundTripTimes)
+
+    print("Average Round Trip delay is " + str(averageRoundTripTime))
+    print("Standard Deviation of Round Trip times are " + str(standardDeviation))
+
+
+
 
 

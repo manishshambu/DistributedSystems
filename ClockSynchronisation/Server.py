@@ -8,8 +8,6 @@ def serverProc():
         data, client = mySocket.recvfrom ( 100 )
         serverRecvTime = str(datetime.utcnow())
         data = data.decode()
-        #print ('We have received a datagram from', client)
-        #print (data)
         serverRespTime = str(datetime.utcnow())
         serverTimes = serverRecvTime + "**" + serverRespTime
         mySocket.sendto ( serverTimes.encode(), client )
