@@ -1,20 +1,42 @@
 import socket
 from datetime import datetime
+import numpy
 
 def clientProc():
+    clientTimesDict = {}
+    serverTimesDict = {}
     mySocket = socket.socket ( socket.AF_INET, socket.SOCK_DGRAM )
-    clientReqTime = datetime.utcnow()
-    message = "Hello"
+    clientTimesDict['clientReqTime'] = datetime.utcnow()
+    message = "Hello World"
+
     mySocket.sendto ( message.encode(), ( 'localhost', 2727 ) )
+
     data, server = mySocket.recvfrom ( 100 )
-    clientRecvTime = datetime.utcnow()
-    serverRecvTime = data.decode()
+    clientTimesDict['clientRecvTime'] = datetime.utcnow()
 
-    print ("Time when the client sent the request to server "+ str(clientReqTime))
-    print("Time when client recieved the server's response " + str(clientRecvTime))
-    print("Time when server recieved the client's request " +  serverRecvTime)
+    serverTimes = data.decode()
+    serverTimesDict['serverRecvTime'] = serverTimes.split("**")[0]
+    serverTimesDict['serverRespTime'] = serverTimes.split("**")[1]
 
+    return clientTimesDict, serverTimesDict
 
 
 if __name__ == "__main__":
-    clientProc()
+    clientReqTimes = []
+    clientRecvTimes = []
+    serverRecvTimes = []
+    serverRespTimes = []
+
+    roundTripTimes = []
+
+    for i in range(100):
+        clientTimesDict, serverTimesDict = clientProc()
+        clientReqTimes.append(clientTimesDict['clientReqTime'])
+        clientRecvTimes.append(clientTimesDict['clientRecvTime'])
+        serverRecvTimes.append(serverTimesDict['serverRecvTime'])
+        serverRespTimes.append(serverTimesDict['serverRespTime'])
+        roundTripTimes.append(clientTimesDict['clientRecvTime'] - clientTimesDict['clientReqTime'])
+
+    print("Average Round Trip delay is "+str(numpy.mean(roundTripTimes)))
+
+
