@@ -24,3 +24,8 @@ synchronization algorithm, and plot the difference between the local clock and t
 estimated server clock values for each scenario. Based on your observations, what is a
 reasonable estimate of absolute minimum latency between machine A and machine B.
 Using this estimate, calculate the error bounds for the synchronized time.
+
+Question 3: Compute the offset (oi) and delay (di) for each of the measurements for
+each scenario using the NTP formula and plot them in a graph (x-axis: measurement #;
+y-axis: oi or di). Analyze your results for each scenario in relation to the roundtrip
+latencies you computed in Question 1. 
