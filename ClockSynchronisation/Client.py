@@ -3,6 +3,8 @@ from datetime import datetime
 import numpy
 import matplotlib.pyplot as plt
 import csv
+from time import sleep
+from dateutil import parser
 
 def clientProc():
     clientTimesDict = {}
@@ -30,23 +32,47 @@ if __name__ == "__main__":
     serverRespTimes = []
 
     roundTripTimes = []
+    offsetValues = []
+    delayValues = []
     standardDeviation = []
     averageRoundTripTime = None
     standardDeviation = None
+    offset = None
+    delay = None
 
     with open('results.csv', 'w', newline='') as csvfile:
         csvWriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        csvWriter.writerow(['Client Request Time', 'Client Recieved Time', 'Server Recieved Time', 'Server Response Time', 'Roundtrip delay'])
+        csvWriter.writerow(['Client Request Time', 'Client Recieved Time', 'Server Recieved Time', 'Server Response Time', 'Roundtrip delay', 'Offset', 'Delay'])
 
-        for i in range(100):
+        for i in range(100): # Collect values for 2 hours
             clientTimesDict, serverTimesDict = clientProc()
-            clientReqTimes.append(clientTimesDict['clientReqTime'])
-            clientRecvTimes.append(clientTimesDict['clientRecvTime'])
-            serverRecvTimes.append(serverTimesDict['serverRecvTime'])
-            serverRespTimes.append(serverTimesDict['serverRespTime'])
-            roundTripTime = (clientTimesDict['clientRecvTime'] - clientTimesDict['clientReqTime']).total_seconds()
+
+            clientReqTime = clientTimesDict['clientReqTime']
+            clientRecvTime = clientTimesDict['clientRecvTime']
+            serverRecvTime = parser.parse(serverTimesDict['serverRecvTime'])
+            serverRespTime = parser.parse(serverTimesDict['serverRespTime'])
+
+            clientReqTimes.append(clientReqTime)
+            clientRecvTimes.append(clientRecvTime)
+            serverRecvTimes.append(serverRecvTime)
+            serverRespTimes.append(serverRespTime)
+
+            #roundTripTime
+            roundTripTime = (clientRecvTime - clientReqTime).total_seconds()
+
+            #Offset
+            offset = ((serverRecvTime - clientReqTime).total_seconds() + (serverRespTime - clientRecvTime).total_seconds())/2
+            #print(offset)
+            offsetValues.append(offset)
+
+            #Delay
+            delay = (serverRecvTime - clientReqTime).total_seconds() + ( clientRecvTime - serverRespTime).total_seconds()
+            #print(delay)
+            delayValues.append(delay)
+
             roundTripTimes.append(roundTripTime)
-            csvWriter.writerow([clientTimesDict['clientReqTime'], clientTimesDict['clientRecvTime'], serverTimesDict['serverRecvTime'], serverTimesDict['serverRespTime'], roundTripTime ])
+            csvWriter.writerow([clientReqTime, clientRecvTime, serverRecvTime, serverRespTime, roundTripTime, offset, delay ])
+            #sleep(10)
 
 
     averageRoundTripTime = numpy.mean(roundTripTimes)

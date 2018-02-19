@@ -10,7 +10,7 @@ def serverProc():
         data = data.decode()
         serverRespTime = str(datetime.utcnow())
         serverTimes = serverRecvTime + "**" + serverRespTime
-        mySocket.sendto ( serverTimes.encode(), client )
+        mySocket.sendto (serverTimes.encode(), client )
 
 if __name__ == "__main__":
     serverProc()
