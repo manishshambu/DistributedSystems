@@ -24,6 +24,16 @@ def clientProc():
 
     return clientTimesDict, serverTimesDict
 
+def plotOffsetGraph(offsetValues, mean, std):
+    plt.plot([i for i in range(len(offsetValues))], offsetValues)
+    plt.xlabel("Measurement #")
+    plt.ylabel("Offset Values")
+    plt.figtext(.4, .8, "Average Round Trip Time = "+str(mean))
+    plt.figtext(.4, .7, "Standard Deviation = " + str(std))
+    plt.savefig("Offset Graph")
+    #plt.show()
+
+
 
 if __name__ == "__main__":
     clientReqTimes = []
@@ -77,6 +87,8 @@ if __name__ == "__main__":
 
     averageRoundTripTime = numpy.mean(roundTripTimes)
     standardDeviation    = numpy.std(roundTripTimes)
+
+    plotOffsetGraph(offsetValues, averageRoundTripTime, standardDeviation)
 
     print("Average Round Trip delay is " + str(averageRoundTripTime))
     print("Standard Deviation of Round Trip times are " + str(standardDeviation))
