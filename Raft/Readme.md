@@ -1,26 +1,50 @@
-			Fault Tolerant System using Raft
+Raft Reference from https://raft.github.io/.
+Learnt Raft basics from The Secret Lives of Data
+I used https://github.com/coreos/etcd version for my assignment.
+Install GO from https://golang.org/doc/install, since the Raft version I will be using is written in GOLang.
+git clone https://github.com/coreos/etcd.git.
+cd etcd
 
-1.	Raft reference  from https://raft.github.io/.
-2.	Learnt Raft basics from The Secret Lives of Data
-3.	Will be using https://github.com/coreos/etcd implementation for my assignment.
-4.	Installed Go from https://golang.org/doc/install, since the Raft version I will be using is written in Go.
-5.	git clone https://github.com/coreos/etcd.git.
-6.	cd etcd
-7.	add export GOPATH=$HOME/go
-    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin" to ./bash_profile.
-	1.	8.	.go build
-	2.	9.	./build
-	3.	10.	Starting etcd ./bin/etcd.  (https://github.com/coreos/etcd/blob/master/Documentation/dl_build.md)
-	4.	11.	Simple commands with etcd.
-	5.	ETCDCTL_API=3 etcdctl put mykey ”this is awesome”
-	6.	ETCDCTL_API=3 etcdctl get mykey
-	7.	12. Playing with the cluster to test the FTStack
-	8.	$ export ETCDCTL_API=3
-	9.	  $ ./etcdctl put foo bar
-	10.	./etcdctl get foo
-	11.	goreman -f Procfile start // Start the cluster
-	12.	etcdctl --write-out=table --endpoints=localhost:2379 member list.  // List out the corrent cluster members
-	13.	goreman run stop etcd2 // Kill a member from the cluster
-	14.	etcdctl --endpoints=localhost:22379 get key // Get the value from the killed process
-	15.	 goreman run restart etcd2 // Restart the killed proc
-	16.	etcdctl --endpoints=localhost:22379 get key // Get the key after restarting the killed process.
+
+// Set the Paths
+add export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin" to ./bash_profile.
+
+.go build // To install Go
+./build
+
+// To start etcd
+./bin/etcd
+
+// To use version3 of ETCD by default
+export ETCDCTL_API=3
+
+// Storing and retrieving data from the Distributed RAFT system
+etcdctl put mykey ”this is awesome”
+etcdctl get mykey
+
+// Starting a cluster of servers.
+I used goreman library to achive this
+
+goreman -f Procfile start
+
+// List out the current cluster members
+etcdctl --write-out=table --endpoints=localhost:2379 member list
+
+// Kill a member from the cluster
+goreman run stop etcd2 
+
+// Retrieve the value from the cluster.
+// Since our is a fault tolerant system, we will still be able to retrieve the key even if one process fails.
+etcdctl get mykey
+
+// Getting value from the killed server - We get an error
+etcdctl --endpoints=localhost:22379 get key
+
+// Restart the killed server
+goreman run restart etcd2 
+
+// We will be able to retrieve the value after restarting the server
+// This is because of the RAFT consensus, wherien the servers exchange messages
+etcdctl --endpoints=localhost:22379 get key 
+
