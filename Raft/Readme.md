@@ -1,8 +1,13 @@
 Raft Reference from https://raft.github.io/.
+
 Learnt Raft basics from The Secret Lives of Data
+
 I used https://github.com/coreos/etcd version for my assignment.
+
 Install GO from https://golang.org/doc/install, since the Raft version I will be using is written in GOLang.
+
 git clone https://github.com/coreos/etcd.git.
+
 cd etcd
 
 
