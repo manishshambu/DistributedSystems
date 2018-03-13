@@ -33,7 +33,7 @@ etcdctl put mykey ”this is awesome”
 etcdctl get mykey
 
 // Starting a cluster of servers.
-I used goreman library to achive this
+I used goreman library to achieve this
 
 goreman -f Procfile start
 
