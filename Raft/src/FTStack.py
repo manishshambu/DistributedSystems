@@ -1,73 +1,99 @@
-import os
+import etcd
 
-def sCreate(label):
-    pass
 
-def sId(label):
-        pass
+def sPush(sLabel, element, client):
+    print(sRead(sLabel))
+    stackLen = len(sRead(sLabel))
+    client.write('/'+sLabel+'/'+str(stackLen), element)
+    print(sRead(sLabel))
 
-def sPush(stackId, item):
-        os.system("etcdctl put "+ stackId +" "+item)
+def sPop(sLabel):
+    print(sRead(sLabel))
+    stackLen = len(sRead(sLabel))
+    popElement = None
 
-def sPop(stackId):
-        os.system("etcdctl get "+ stackId)
+    if stackLen > 0:
+        popElement = sRead(sLabel)[-1]
+        client.delete('/'+sLabel+'/'+str(stackLen - 1))
+        print(sRead(sLabel))
+    else:
+        print("Nothing to pop from the stack")
+        return None
 
-def sTop(stackId):
-        pass
+    return popElement
 
-def sSize(stackId):
-        pass
 
-def killProcess():
-    pass
+def sCreate(sLabel, nums):
 
-def retrieveMembers():
-    pass
+    if sLabel in getCurrentStacks():
+        print("Stack with sLabel already exists")
+    else:
+        for i in range(len(nums)):
+            client.write('/' + sLabel + '/' + str(i), nums[i])
 
-def startCluster():
-    pass
+    return getCurrentStacks()[sLabel]
 
-def clusterMembers():
-    pass
+def sRead(sLabel):
+    stackRead = client.read("/"+sLabel, recursive = True)
+    values = (stackRead.__dict__['_children'])
 
-def startEtcd():
-    pass
+    stackContents = [None] * len(values)
+
+    for i in range(len(values)):
+        valueSet = dict(values[i])
+        key = int((valueSet['key']).split("/")[2])
+        stackContents[key] = int(valueSet['value'])
+
+    return stackContents
+
+def getCurrentStacks():
+    stackRead = client.read("/", recursive=True)
+    values = stackRead.__dict__['_children']
+
+    if not values:
+        print("No stacks created")
+    print(values)
+
+    curStacks = {}
+
+    for i in range(len(values)):
+        valueSet = dict(values[i])
+        if 'dir' in valueSet:
+            curStacks[valueSet['key'][1:]] = valueSet['createdIndex']
+
+    return curStacks
+
+
+
+def sId(sLabel):
+    return stacks[sLabel]
+
+def sSize(sLabel):
+    return len(sRead(sLabel))
+
+def sTop(sLabel):
+    return sRead(sLabel)[-1]
+
+def machines(client):
+    return client.machines
+
+def leader(client):
+    return client.leader
+
+
 
 if __name__ == "__main__":
-    while(True):
-        number = input("Enter any one of the following options."
-                       "1. Start etcl Raft process\n"
-                       "2. Start Goreman cluster\n"
-                       "3. Create sLabel\n"
-                       "4. Push element into FTstack\n"
-                       "5. Get element from FTstack\n"
-                       "6. Get top of stack\n"
-                       "7. get sID\n"
-                       "8. View current members in the cluster"
-                       "9. Kill a server in the cluster"
-                       "10. Retrieve value from a specific server in the cluster.")
+    client = etcd.Client(host='127.0.0.1', port=22379)
+    #client = etcd.Client(host=(('127.0.0.1', 22379), ('127.0.0.1', 32379), ('127.0.0.1', 2379)))
 
-        print(number)
-
-        if number == 1:
-            pass
-        elif number == 2:
-            pass
-        elif number == 3:
-            pass
-        elif number == 4:
-            pass
-        elif number == 5:
-            pass
-        elif number == 6:
-            pass
-        elif number == 7:
-            pass
-        elif number == 8:
-            pass
-        elif number == 9:
-            pass
-        elif number == 10:
-            pass
-
+    print(client.read("/", recursive=True))
+    print("New ID of the created stack is "+str(sCreate("manish", [1,2,3,4])))
+    print("Contents of the stack are "+str(sRead("manish")))
+    #sPush("manish", 7, client)
+    #sPop("manish")
+    #print("Size of the stack is "+str(sSize("manish")))
+    #print("Top of the stack is "+str(sTop("manish")))
+    print("Machines in the cluster are "+str(machines(client)))
+    #print("Leader of the cluster is "+str(leader(client)))
+    #print("Stacks present within the system are {name : id} as follows: "+str(getCurrentStacks()))
 
