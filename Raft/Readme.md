@@ -63,3 +63,7 @@ goreman run restart etcd2
 
 etcdctl --endpoints=localhost:22379 get key 
 
+
+I used etcd python client to interact with the system and implemented a distributed stack data structure.
+
+
