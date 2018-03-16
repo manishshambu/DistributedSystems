@@ -65,5 +65,11 @@ etcdctl --endpoints=localhost:22379 get key
 
 
 I used etcd python client to interact with the system and implemented a distributed stack data structure.
+The below operations on stack is in working condistion.
+
+int sCreate (int label); //Creates a new stack of integers; associates this //stack with label and returns a stack id (int)
+int sId (int label); //returns stack id of the stack associated with label
+void sPush (int stack_id, int item); // pushes item into the stack
+int sPop (int stack_id); // pops an element from the stack and returns it int sTop (int stack_id); // returns the value of the first element in the stack int sSize (int stack_id); // returns the number of items in the stack
 
 
