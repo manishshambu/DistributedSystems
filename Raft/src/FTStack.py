@@ -66,7 +66,7 @@ def getCurrentStacks():
 
 
 def sId(sLabel):
-    return stacks[sLabel]
+    return getCurrentStacks()[sLabel]
 
 def sSize(sLabel):
     return len(sRead(sLabel))
@@ -83,8 +83,7 @@ def leader(client):
 
 
 if __name__ == "__main__":
-    client = etcd.Client(host='127.0.0.1', port=22379)
-    #client = etcd.Client(host=(('127.0.0.1', 22379), ('127.0.0.1', 32379), ('127.0.0.1', 2379)))
+    client = etcd.Client(host='127.0.0.1', port=32379)
 
     print(client.read("/", recursive=True))
     print("New ID of the created stack is "+str(sCreate("manish", [1,2,3,4])))
