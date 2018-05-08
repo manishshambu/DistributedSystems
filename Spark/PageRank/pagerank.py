@@ -1,10 +1,5 @@
 
-"""
-This is an example implementation of PageRank. For more conventional use,
-Please refer to PageRank implementation provided by graphx
-Example Usage:
-bin/spark-submit examples/src/main/python/pagerank.py data/mllib/pagerank_data.txt 10
-"""
+
 from __future__ import print_function
 
 import re
@@ -42,11 +37,7 @@ if __name__ == "__main__":
         .appName("PythonPageRank")\
         .getOrCreate()
 
-    # Loads in input file. It should be in format of:
-    #     URL         neighbor URL
-    #     URL         neighbor URL
-    #     URL         neighbor URL
-    #     ...
+  
     lines = spark.read.text(sys.argv[1]).rdd.map(lambda r: r[0])
 
     # Loads all URLs from input file and initialize their neighbors.
